@@ -1,0 +1,10 @@
+/ip firewall filter
+add chain=forward connection-state=new action=jump jump-target=detect-ddos comment="DDoS protect"
+/ip firewall filter
+add chain=detect-ddos dst-limit=32,32,src-and-dst-addresses/10s action=return comment="DDoS protect"
+add chain=detect-ddos src-address=192.168.0.1 action=return comment="DDoS protect"
+/ip firewall filter
+add chain=detect-ddos action=add-dst-to-address-list address-list=ddosed address-list-timeout=10m comment="DDoS protect"
+add chain=detect-ddos action=add-src-to-address-list address-list=ddoser address-list-timeout=10m comment="DDoS protect"
+/ip firewall filter
+add chain=forward connection-state=new src-address-list=ddoser dst-address-list=ddosed action=drop comment="DDoS protect"
